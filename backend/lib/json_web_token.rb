@@ -1,9 +1,14 @@
 class JsonWebToken
+  HMAC_SECRET = Rails.application.credentials.hmac_secret 
+
   def self.encode(payload)
-    JWT.encode(payload, Rails.application.credentials.hmac_secret, 'HS256')
+    JWT.encode(payload, HMAC_SECRET, 'HS256')
   end
 
   def self.decode(token)
-    JWT.decode(token, Rails.application.credentials.hmac_secret, true, { algorithm: 'HS256' })
+    token = JWT.decode(token, HMAC_SECRET, true, { algorithm: 'HS256' }).first
+    HashWithIndifferentAccess.new(token)
+  rescue JWT::DecodeError
+    nil
   end
 end
