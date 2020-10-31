@@ -6,8 +6,8 @@ class JsonWebToken
   end
 
   def self.decode(token)
-    token = JWT.decode(token, HMAC_SECRET, true, { algorithm: 'HS256' }).first
-    HashWithIndifferentAccess.new(token)
+    decoded_token = JWT.decode(token, HMAC_SECRET, true, { algorithm: 'HS256' }).first
+    HashWithIndifferentAccess.new(decoded_token)
   rescue JWT::DecodeError
     nil
   end

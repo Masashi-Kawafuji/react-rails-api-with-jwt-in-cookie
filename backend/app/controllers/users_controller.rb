@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  skip_before_action :require_login, only: :create
+
   def create
     user = User.new(user_params) 
     if user.save
@@ -6,6 +8,8 @@ class UsersController < ApplicationController
       jwt_token = JsonWebToken.encode(payload)
       cookie[:jwt_token] = { value: jwt_token, httponly: true }
       render json: user, status: :created
+    else
+      render status: :unprocessable_entity
     end
   end
 
