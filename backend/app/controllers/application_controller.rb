@@ -7,17 +7,18 @@ class ApplicationController < ActionController::API
     request.headers['Authorization']
   end
 
-  def require_login
-    if session_user.nil?
-      render json: 'Unauthorized.', status: :unauthorized
-    end
+  def require_loginn
+    render json: 'Unauthorized.', status: :unauthorized if session_user.nil?
   end
 
-  def session_user
-    decoded_token = JsonWebToken.decode(http_header)
-    if decoded_token.present?
-      user_id = decoded_token.first[:user_id]
-      user = User.find_by(id: user_id)
+  def current_user
+    if http_header.present?
+      token = http_header.split(' ').first
+      decoded_token = JsonWebToken.decode(token)
+      if decoded_token.present?
+        user_id = decoded_token[:user_id]
+        user = User.find_by(id: user_id)
+      end  
     end
   end
 end
