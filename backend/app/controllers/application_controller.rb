@@ -5,7 +5,7 @@ class ApplicationController < ActionController::API
   private
   
   def jwt_token
-    request.cookies[:jwt_token]
+    request.cookies['jwt_token']
   end
 
   def require_login
@@ -13,7 +13,6 @@ class ApplicationController < ActionController::API
   end
 
   def current_user
-    binding.pry
     token = jwt_token
     decoded_token = JsonWebToken.decode(token)
     if decoded_token.present?
