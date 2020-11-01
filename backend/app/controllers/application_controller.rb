@@ -1,24 +1,24 @@
 class ApplicationController < ActionController::API
   before_action :require_login
+  include ActionController::Cookies
 
   private
   
-  def http_header
-    request.headers['Authorization']
+  def jwt_token
+    request.cookies[:jwt_token]
   end
 
-  def require_loginn
-    render json: 'Unauthorized.', status: :unauthorized if session_user.nil?
+  def require_login
+    render json: 'Unauthorized.', status: :unauthorized if current_user.nil?
   end
 
   def current_user
-    if http_header.present?
-      token = http_header.split(' ').first
-      decoded_token = JsonWebToken.decode(token)
-      if decoded_token.present?
-        user_id = decoded_token[:user_id]
-        user = User.find_by(id: user_id)
-      end  
-    end
+    binding.pry
+    token = jwt_token
+    decoded_token = JsonWebToken.decode(token)
+    if decoded_token.present?
+      user_id = decoded_token[:user_id]
+      user = User.find_by(id: user_id)
+    end  
   end
 end
