@@ -5,7 +5,7 @@ class ApplicationController < ActionController::API
   private
   
   def request_cookie
-    request.cookies['jwt']
+    cookies.encrypted['jwt']
   end
 
   def require_login
