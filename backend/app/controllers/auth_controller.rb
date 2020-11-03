@@ -1,5 +1,5 @@
 class AuthController < ApplicationController
-  skip_before_action :require_login 
+  skip_before_action :require_login, only: :login
   include TokenActions
   include ActionController::Cookies
 
@@ -14,6 +14,7 @@ class AuthController < ApplicationController
   end
 
   def logout
-    cookies.delete :jwt_token
+    cookies.delete :jwt
+    render json: { message: 'logged out successfully.' }
   end
 end
