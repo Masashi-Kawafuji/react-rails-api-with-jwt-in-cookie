@@ -19,6 +19,12 @@ const App = () => {
 
   const history = useHistory();
 
+  const providerValue = {
+    authorizedUser: authorizedUser,
+    setAuthorizedUser: setAuthorizedUser,
+    isLoggedIn: authorizedUser !== null
+  };
+
   useEffect(() => {
     instance.get('/auto_login')
       .then(response => {
@@ -46,7 +52,7 @@ const App = () => {
   }
 
   return (
-    <AuthenticationContext.Provider value={ }>
+    <AuthenticationContext.Provider value={providerValue}>
       <AuthenticationContext.Consumer>
         {({ isLoggedIn }) => (
           <React.Fragment>
@@ -55,13 +61,15 @@ const App = () => {
                 <Nav.Item as='li'>
                   <Nav.Link as={Link} to='/'>Home</Nav.Link>
                 </Nav.Item>
-                <Nav.Item as='li'>
-                  <Nav.Link as={Link} to='/posts'>Posts</Nav.Link>
-                </Nav.Item>
                 {isLoggedIn ? (
-                  <Nav.Item as='li'>
-                    <Nav.Link onClick={handleSignOutClick}>Sign Out</Nav.Link>
-                  </Nav.Item>
+                  <>
+                    <Nav.Item as='li'>
+                      <Nav.Link as={Link} to='/posts'>Posts</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item as='li'>
+                      <Nav.Link onClick={handleSignOutClick}>Sign Out</Nav.Link>
+                    </Nav.Item>
+                  </>
                 ) : (
                     <>
                       <Nav.Item as='li'>

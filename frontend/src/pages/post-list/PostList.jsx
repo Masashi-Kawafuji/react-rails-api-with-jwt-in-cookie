@@ -4,13 +4,11 @@ import instance from '../../services/instance';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-// import useForm from '../../hooks/useForm';
 
 
 export const PostList = () => {
   const [posts, setPost] = useState([]);
   const [input, setInput] = useState({ body: '' });
-  // const [form, handleFormChange] = useForm({ body: '' });
   const history = useHistory();
 
   useEffect(() => {
@@ -39,8 +37,8 @@ export const PostList = () => {
     instance.post('/posts', { post: input })
       .then(response => {
         console.log(response);
-        const post = response.data;
-        setPost(posts => [...posts, post]);
+        const { data: attributes } = response.data;
+        setPost(posts => [...posts, attributes]);
         setInput({ body: '' });
       })
       .catch(error => {
@@ -64,6 +62,7 @@ export const PostList = () => {
           <Form.Control
             as='textarea'
             name='body'
+            value={input.body}
             onChange={handleInputChange}
           />
         </Form.Group>

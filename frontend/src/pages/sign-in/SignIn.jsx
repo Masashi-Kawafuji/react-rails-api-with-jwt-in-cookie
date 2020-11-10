@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useHistory } from "react-router-dom";
+import AuthenticationContext from 'contexts/AuthenticationContext';
 import instance from '../../services/instance';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -13,6 +14,8 @@ export const SignIn = () => {
 
   const history = useHistory();
 
+  const { setAuthorizedUser } = useContext(AuthenticationContext);
+
   const handleInputChange = event => {
     const { name, value } = event.target;
     setInput(input => ({ ...input, [name]: value }));
@@ -22,7 +25,9 @@ export const SignIn = () => {
     instance.post('/login', input)
       .then(response => {
         console.log(response);
-        const user = response.data;
+        const { data: attributes } = response.data;
+        console.log(attributes);
+        setAuthorizedUser(attributes);
         history.push('/posts');
       })
       .catch(error => {
