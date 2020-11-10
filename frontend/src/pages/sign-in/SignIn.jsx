@@ -9,7 +9,7 @@ export const SignIn = () => {
   const [input, setInput] = useState({
     email: '',
     password: ''
-  })
+  });
 
   const history = useHistory();
 
@@ -22,6 +22,7 @@ export const SignIn = () => {
     instance.post('/login', input)
       .then(response => {
         console.log(response);
+        const user = response.data;
         history.push('/posts');
       })
       .catch(error => {

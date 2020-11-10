@@ -10,19 +10,22 @@ import {
   SignIn,
   PostList
 } from './pages';
+import AuthenticationContext from 'contexts/AuthenticationContext';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
-  const [user, setUser] = useState(null);
-  const isLoggedIn = user !== null;
+  const [authorizedUser, setAuthorizedUser] = useState(null);
+
   const history = useHistory();
 
   useEffect(() => {
     instance.get('/auto_login')
       .then(response => {
-        console.log(response.data)
-        setUser(response.data);
+        console.log('auto logged in.')
+        console.log(response.data);
+        const { data: attributes } = response.data;
+        setAuthorizedUser(attributes);
       })
       .catch(error => {
         console.log(error);
@@ -34,7 +37,7 @@ const App = () => {
     instance.delete('/logout')
       .then(response => {
         console.log(response);
-        setUser(null);
+        setAuthorizedUser(null);
         history.push('/sign-in');
       })
       .catch(error => {
@@ -43,48 +46,54 @@ const App = () => {
   }
 
   return (
-    <React.Fragment>
-      <Navbar bg="light" expand="sm">
-        <Nav as='ul' className='ml-auto'>
-          <Nav.Item as='li'>
-            <Nav.Link as={Link} to='/'>Home</Nav.Link>
-          </Nav.Item>
-          <Nav.Item as='li'>
-            <Nav.Link as={Link} to='/posts'>Posts</Nav.Link>
-          </Nav.Item>
-          {isLoggedIn ? (
-            <Nav.Item as='li'>
-              <Nav.Link onClick={handleSignOutClick}>Sign Out</Nav.Link>
-            </Nav.Item>
-          ) : (
-              <>
+    <AuthenticationContext.Provider value={ }>
+      <AuthenticationContext.Consumer>
+        {({ isLoggedIn }) => (
+          <React.Fragment>
+            <Navbar bg="light" expand="sm">
+              <Nav as='ul' className='ml-auto'>
                 <Nav.Item as='li'>
-                  <Nav.Link as={Link} to='/sign-up'>Sign Up</Nav.Link>
+                  <Nav.Link as={Link} to='/'>Home</Nav.Link>
                 </Nav.Item>
                 <Nav.Item as='li'>
-                  <Nav.Link as={Link} to='/sign-in'>Sign In</Nav.Link>
+                  <Nav.Link as={Link} to='/posts'>Posts</Nav.Link>
                 </Nav.Item>
-              </>
-            )}
-        </Nav>
-      </Navbar>
-      <Container>
-        <Switch>
-          <Route exact path='/'>
-            <Home />
-          </Route>
-          <Route path='/sign-up'>
-            <SignUp />
-          </Route>
-          <Route path='/sign-in'>
-            <SignIn />
-          </Route>
-          <Route path='/posts'>
-            <PostList />
-          </Route>
-        </Switch>
-      </Container>
-    </React.Fragment>
+                {isLoggedIn ? (
+                  <Nav.Item as='li'>
+                    <Nav.Link onClick={handleSignOutClick}>Sign Out</Nav.Link>
+                  </Nav.Item>
+                ) : (
+                    <>
+                      <Nav.Item as='li'>
+                        <Nav.Link as={Link} to='/sign-up'>Sign Up</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as='li'>
+                        <Nav.Link as={Link} to='/sign-in'>Sign In</Nav.Link>
+                      </Nav.Item>
+                    </>
+                  )}
+              </Nav>
+            </Navbar>
+            <Container>
+              <Switch>
+                <Route exact path='/'>
+                  <Home />
+                </Route>
+                <Route path='/sign-up'>
+                  <SignUp />
+                </Route>
+                <Route path='/sign-in'>
+                  <SignIn />
+                </Route>
+                <Route path='/posts'>
+                  <PostList />
+                </Route>
+              </Switch>
+            </Container>
+          </React.Fragment>
+        )}
+      </AuthenticationContext.Consumer>
+    </AuthenticationContext.Provider>
   );
 }
 
